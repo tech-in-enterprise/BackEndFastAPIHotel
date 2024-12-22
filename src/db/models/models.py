@@ -1,15 +1,41 @@
-from sqlalchemy import Table, Column, ForeignKey, Integer, String, Float
+from sqlalchemy import Table, Column, ForeignKey, Integer, String, Float, Boolean
 from db.config.database import Base
 from sqlalchemy.orm import relationship
+
+
+
+
+class Role(Base):
+    __tablename__ = 'roles'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    access_level = Column(String, unique=True, nullable=False)  # Ex.: Administrador, Gerente
+    description_of_access_level = Column(String, nullable=True)
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_name = Column(String, nullable=False)
+    user_email = Column(String, unique=True, nullable=False)
+    user_password = Column(String)
+    is_active = Column(Boolean, default=True)
+
+    role_id = Column(Integer, ForeignKey('roles.id'))
+    hotel_id = Column(Integer, ForeignKey('hotels.id'))  # Relaciona o usuário ao hotel
+
+    role = relationship('Role', back_populates='users')
+    hotel = relationship('Hotel', back_populates='users')
 
 
 class Hotel(Base):
     __tablename__ = 'hotels'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
+    hotel_name = Column(String, nullable=False)
+    registered_name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
-    email_address = Column(String,  nullable=False)
+    hotel_email = Column(String,  nullable=False)
     cnpj = Column(String,  nullable=False)
 
     #address
@@ -34,6 +60,8 @@ class Hotel(Base):
 
     rooms = relationship('Room', back_populates='hotel')
     departments = relationship('Department', back_populates='hotel')
+    users = relationship('User', back_populates='hotel')  # Relaciona usuários com hotéis
+
 
 class Guest(Base):
     __tablename__ = 'guests'
@@ -94,3 +122,5 @@ class Request(Base):
     guest = relationship("Guest", back_populates="requests")
     department = relationship("Department", back_populates="requests")  
 
+# Relacionamento bidirecional de roles e usuários
+Role.users = relationship('User', back_populates='role')

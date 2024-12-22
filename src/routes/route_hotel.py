@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from db.config.database import get_db
 from db.models import models
 from db.schemas import schema
-from dependencies.hotel import Hotel
+from dependencies.hotel import Hotel, HotelRepository
 
 
 router = APIRouter()
@@ -21,3 +21,17 @@ def new_hotel(hotel: schema.HotelSchema, db: Session = Depends(get_db)):
     hotel_created = Hotel(db).create_hotel_in_db(hotel)
     return hotel_created
 
+#Patch Hotel Amenities
+@router.patch('/update-amenities-hotel/{hotel_id}', status_code=status.HTTP_201_CREATED)
+def update_hotel_amenities(hotel_id: int, data: schema.HotelAdditionalDataSchema, db: Session = Depends(get_db)):
+    # Instancia o repositório do hotel
+    hotel_repo = HotelRepository(db)
+
+    # Atualiza o hotel no banco de dados
+    updated_hotel = hotel_repo.update_hotel_in_db(hotel_id, data)
+
+    # Caso o hotel não seja encontrado
+    if not updated_hotel:
+        raise HTTPException(status_code=404, detail="Hotel not found")
+
+    return updated_hotel

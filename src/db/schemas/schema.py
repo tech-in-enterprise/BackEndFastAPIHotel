@@ -4,11 +4,24 @@ from datetime import date, datetime
 
 
 
+class RoleSchema(BaseModel):
+    access_level: str
+    description_of_access_level: Optional[str] = None
+
+
+class UserSchema(BaseModel):
+    id: int | None = None
+    name: str
+    email: str
+    password: str
+
+
 class HotelSchema(BaseModel):
     id: int
-    name: str
+    hotel_name: str
+    registered_name: str
     phone_number: str
-    email_address: str
+    hotel_email: str
     cnpj: str
 
     # Endereço
@@ -18,14 +31,13 @@ class HotelSchema(BaseModel):
     state: str
     cep: str
 
-    # Redes sociais
-    social_media: Optional[str]
+    class Config:
+        orm_mode = True
 
-    # Wi-Fi
+class HotelAdditionalDataSchema(BaseModel):
+    social_media: Optional[str]
     wifi_network: Optional[str]
     wifi_password: Optional[str]
-
-    # Comodidades (Amenity)
     amenity: Optional[str]
     start_time: Optional[str]
     end_time: Optional[str]
