@@ -1,7 +1,7 @@
 from fastapi import  HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import select, update, delete
+from sqlalchemy import select
 from db.schemas import schema
 from db.models import models
 
@@ -33,6 +33,5 @@ class UserDependencies():
             self.session.refresh(user_bd)
         except IntegrityError as e:
         # Captura erros de integridade, como violação de chave estrangeira
-            self.session.rollback()  # Reverte a transação
             raise HTTPException(status_code=400, detail="Hotel ID não existe ou é inválido.")
         return user_bd

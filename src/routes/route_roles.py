@@ -20,7 +20,7 @@ async def create_role(role: schema.RoleSchema, db: Session = Depends(get_db)):
     # Verificando se já existe uma role com o mesmo access_level
     db_role = db.query(models.Role).filter(models.Role.access_level == role.access_level).first()
     if db_role:
-        raise HTTPException(status_code=400, detail="Access level already exists")
+        raise HTTPException(status_code=400, detail="Nível de acesso já existe")
 
     # Criando e adicionando a nova role no banco de dados
     db_role = models.Role(
